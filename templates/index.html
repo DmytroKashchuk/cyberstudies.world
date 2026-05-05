@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cyberstudies.world — Projects</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <style>
+        body { background-color: #f8f9fa; }
+        .project-card { transition: transform 0.15s, box-shadow 0.15s; height: 100%; }
+        .project-card:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.1); }
+        .tag { font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <header class="py-5 text-center border-bottom bg-white">
+        <div class="container">
+            <h1 class="display-5 fw-bold mb-2">Welcome to the Cyberstudies World!</h1>
+            <p class="lead text-muted mb-0">
+                Exploring the human, social, and technical aspects of cybersecurity.
+            </p>
+        </div>
+    </header>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <p>
+                    Here we are doing research on a bunch of really interesting topics related to cyber security.
+                    Looking at cybersecurity from a different perspective, we are trying to understand the human and
+                    social aspects of cyber security. We are also looking at the technical aspects of cyber security.
+                </p>
+                <p>
+                    Research shouldn't just end with the publication of a paper. We are trying to make our research
+                    more accessible and usable for everyone, and more interactive and engaging through the use of
+                    visualizations of our data, results, and findings via web visualization and interactive tools.
+                </p>
+                <p class="mb-0">
+                    Publishing just raw CVE files and scripts to run is not user friendly, that's why we are
+                    creating a web interface to interact with our data and results, making it more accessible
+                    and usable for everyone.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container pb-4">
+        <h2 class="h3 text-center mb-4">Research</h2>
+        <div class="row justify-content-center mb-3">
+            <div class="col-md-8 col-lg-6">
+                <input
+                    type="search"
+                    id="search"
+                    class="form-control form-control-lg"
+                    placeholder="Search projects by name, description, or tag…"
+                    autocomplete="off"
+                    aria-label="Search projects"
+                />
+                <div class="text-muted small text-center mt-2">
+                    <span id="count">{{ projects|length }}</span> project(s)
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4" id="projects">
+            {% for project in projects %}
+            <div
+                class="col-sm-6 col-lg-4 project-item"
+                data-name="{{ project.name|lower }}"
+                data-description="{{ project.description|lower }}"
+                data-tags="{{ project.tags|join(' ')|lower }}"
+            >
+                <div class="card project-card shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ project.name }}</h5>
+                        <p class="card-text text-muted flex-grow-1">{{ project.description }}</p>
+                        <div class="mb-3">
+                            {% for tag in project.tags %}
+                            <span class="badge rounded-pill text-bg-light tag border">#{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        <a
+                            href="{{ project.url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn btn-primary mt-auto"
+                        >
+                            Visit project →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="empty" class="text-center text-muted py-5 d-none">
+            No projects match your search.
+        </div>
+    </div>
+
+    <footer class="text-center text-muted py-4 small border-top bg-white">
+        © cyberstudies.world
+    </footer>
+
+    <script>
+        (function () {
+            const search = document.getElementById('search');
+            const items = Array.from(document.querySelectorAll('.project-item'));
+            const countEl = document.getElementById('count');
+            const emptyEl = document.getElementById('empty');
+
+            search.addEventListener('input', function () {
+                const q = search.value.trim().toLowerCase();
+                let visible = 0;
+                items.forEach(item => {
+                    const haystack = [
+                        item.dataset.name,
+                        item.dataset.description,
+                        item.dataset.tags,
+                    ].join(' ');
+                    const match = !q || haystack.includes(q);
+                    item.classList.toggle('d-none', !match);
+                    if (match) visible++;
+                });
+                countEl.textContent = visible;
+                emptyEl.classList.toggle('d-none', visible !== 0);
+            });
+        })();
+    </script>
+</body>
+</html>
